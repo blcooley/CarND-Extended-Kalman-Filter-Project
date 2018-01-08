@@ -1,7 +1,10 @@
 #include "kalman_filter.h"
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+
+using namespace std;
 
 // Please note that the Eigen library does not initialize 
 // VectorXd or MatrixXd objects with zeros upon creation.
@@ -18,25 +21,45 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   H_ = H_in;
   R_ = R_in;
   Q_ = Q_in;
+  I_ = MatrixXd::Identity(x_.size(), x_.size());
 }
 
 void KalmanFilter::Predict() {
-  /**
-  TODO:
-    * predict the state
-  */
+  x_ = F_ * x_;
+  P_ = F_ * P_ * F_.transpose() + Q_;
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Kalman Filter equations
-  */
+  Eigen::VectorXd y(2);
+  y = z - H_ * x_;
+  Eigen::MatrixXd Ht = H_.transpose();
+  Eigen::MatrixXd S = H_ * P_ * Ht + R_;
+  Eigen::MatrixXd K = P_ * Ht * S.inverse();
+
+  x_ = x_ + K * y;
+  P_ = (I_ - K * H_) * P_;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
+  Eigen::VectorXd zhat(3);
+  double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
+  double phi = atan2(x_(1), x_(0));
+  cout << "phi = " << phi << endl;
+  double rhodot;
+  if (abs(rho) > 1e-9) {
+    rhodot = ( x_(0) * x_(2) + x_(1) * x_(3) ) / rho;
+  } else {
+    rhodot = 0;
+  }
+
+  zhat << rho, phi, rhodot;
+  Eigen::VectorXd y(3);
+  y = z - zhat;
+
+  Eigen::MatrixXd Ht = H_.transpose();
+  Eigen::MatrixXd S = H_ * P_ * Ht + R_;
+  Eigen::MatrixXd K = P_ * Ht * S.inverse();
+
+  x_ = x_ + K * y;
+  P_ = (I_ - K * H_) * P_;
 }
