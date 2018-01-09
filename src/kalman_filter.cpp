@@ -42,7 +42,6 @@ void KalmanFilter::Update(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-
   Eigen::VectorXd zhat(3);
   double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
   double phi = atan2(x_(1), x_(0));

@@ -30,14 +30,6 @@ FusionEKF::FusionEKF() {
   R_radar_ << 0.09,      0,    0,
                  0, 0.0009,    0,
                  0,      0, 0.09;
-
-  /**
-  TODO:
-    * Finish initializing the FusionEKF.
-    * Set the process and measurement noises
-  */
-
-
 }
 
 /**
@@ -51,7 +43,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-
     previous_timestamp_ = measurement_pack.timestamp_;
     
     // first measurement
@@ -76,7 +67,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Initialize state.
       */
-
       ekf_.x_(0) = measurement_pack.raw_measurements_(0);
       ekf_.x_(1) = measurement_pack.raw_measurements_(1);
       ekf_.x_(2) = 0;
@@ -89,6 +79,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
                0, 0, 1000,    0,
                0, 0,    0, 1000;
 
+    ekf_.Q_ = MatrixXd(4,4);
+    ekf_.Q_ << 0, 0, 0, 0,
+               0, 0, 0, 0,
+               0, 0, 9, 0,
+               0, 0, 0, 9;
+    
     ekf_.I_ = MatrixXd::Identity(4,4);
 
     H_laser_ = MatrixXd(2,4);
@@ -145,6 +141,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   }
 
   // print the output
-  cout << "x_ = " << ekf_.x_ << endl;
-  cout << "P_ = " << ekf_.P_ << endl;
+  //cout << "x_ = " << ekf_.x_ << endl;
+  //cout << "P_ = " << ekf_.P_ << endl;
 }
