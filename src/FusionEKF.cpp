@@ -51,12 +51,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-    /**
-    TODO:
-      * Initialize the state ekf_.x_ with the first measurement.
-      * Create the covariance matrix.
-      * Remember: you'll need to convert radar from polar to cartesian coordinates.
-    */
 
     previous_timestamp_ = measurement_pack.timestamp_;
     
@@ -95,12 +89,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
                0, 0, 1000,    0,
                0, 0,    0, 1000;
 
-    ekf_.Q_ = MatrixXd(4,4);
-    ekf_.Q_ << 0, 0, 0, 0,
-               0, 0, 0, 0,
-               0, 0, 9, 0,
-               0, 0, 0, 9;
-
     ekf_.I_ = MatrixXd::Identity(4,4);
 
     H_laser_ = MatrixXd(2,4);
@@ -115,14 +103,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   /*****************************************************************************
    *  Prediction
    ****************************************************************************/
-
-  /**
-   TODO:
-     * Update the state transition matrix F according to the new elapsed time.
-      - Time is measured in seconds.
-     * Update the process noise covariance matrix.
-     * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
-   */
 
   double dt = (measurement_pack.timestamp_ - previous_timestamp_)/1000000.0;
   ekf_.F_ = MatrixXd(4,4);
@@ -152,12 +132,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  update
    ****************************************************************************/
 
-  /**
-   todo:
-     * Use the sensor type to perform the update step.
-     * Update the state and covariance matrices.
-   */
-
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
     ekf_.R_ = R_radar_;
@@ -171,6 +145,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   }
 
   // print the output
-  //  cout << "x_ = " << ekf_.x_ << endl;
-  //  cout << "P_ = " << ekf_.P_ << endl;
+  cout << "x_ = " << ekf_.x_ << endl;
+  cout << "P_ = " << ekf_.P_ << endl;
 }
