@@ -14,6 +14,7 @@ Tools::~Tools() {}
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
 
+  // Code copiedd from Udacity SDCND Lesson 5 lectures
   int sz = estimations.size();
   
   VectorXd rmse(4);
@@ -38,6 +39,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 }
 
 MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
+  // Code copiedd from Udacity SDCND Lesson 5 lectures
   MatrixXd Hj(3,4);
   //recover state parameters
   float px = x_state(0);
