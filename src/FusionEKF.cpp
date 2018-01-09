@@ -131,6 +131,19 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
              0, 0,  1,  0,
              0, 0,  0,  1;
 
+  // Update the process noice covariance matrix, Q.
+  float dt2 = dt * dt;
+  float dt3 = dt2 * dt;
+  float dt4 = dt3 * dt;
+  
+  float sigvx = 9.0;
+  float sigvy = 9.0;
+
+  ekf_.Q_ <<  dt4/4*sigvx,           0, dt3/2*sigvx,           0,
+                        0, dt4/4*sigvy,           0, dt3/2*sigvy,
+              dt3/2*sigvx,           0,   dt2*sigvx,           0,
+                        0, dt3/2*sigvy,           0,   dt2*sigvy;
+
   ekf_.Predict();
 
   previous_timestamp_ = measurement_pack.timestamp_;
@@ -150,8 +163,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.R_ = R_radar_;
     ekf_.H_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
-
-    cout << "Radar Measurements: " << endl << measurement_pack.raw_measurements_ << endl;
   } else {
     // Laser updates
     ekf_.R_ = R_laser_;
